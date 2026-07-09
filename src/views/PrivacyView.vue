@@ -35,6 +35,10 @@
             <strong>События входа</strong> — дата и время открытия приложения, чтобы понимать,
             как используется продукт, и делать его лучше.
           </li>
+          <li>
+            <strong>Уведомления</strong> — приложение отправляет локальные напоминания на вашем
+            устройстве; настройки уведомлений хранятся только на устройстве.
+          </li>
         </ul>
 
         <h2>Где хранятся данные</h2>
@@ -90,6 +94,10 @@
           <li>
             <strong>Login events</strong> — the date and time the app is opened, so we can
             understand product usage and improve it.
+          </li>
+          <li>
+            <strong>Notifications</strong> — the app delivers local reminders on your device;
+            notification settings are stored on your device only.
           </li>
         </ul>
 
