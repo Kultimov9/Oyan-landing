@@ -50,8 +50,10 @@
 
         <h2>AI-функции</h2>
         <p>
-          Для персональных советов и напоминаний приложение отправляет обезличенный контекст
-          (названия привычек, задач и целей) в API Anthropic (Claude). Эти данные используются
+          Для персональных советов, приветствий и напоминаний приложение отправляет контекст ваших
+          данных в API Anthropic (Claude): содержимое привычек, задач, целей и рефлексий (включая
+          текст задач и заметок), а также настроение. При этом email, идентификаторы и учётные
+          данные не передаются — контекст не привязан к вашей личности. Эти данные используются
           только для генерации ответа и не применяются для обучения моделей.
         </p>
 
@@ -110,9 +112,11 @@
 
         <h2>AI features</h2>
         <p>
-          To provide personal coaching and reminders, the app sends anonymized context (names of
-          your habits, tasks and goals) to the Anthropic API (Claude). This data is used only to
-          generate a response and is not used to train models.
+          To provide personal coaching, greetings and reminders, the app sends context from your
+          data to the Anthropic API (Claude): the contents of your habits, tasks, goals and
+          reflections (including task text and notes), as well as your mood. Your email,
+          identifiers and credentials are never sent — the context is not tied to your identity.
+          This data is used only to generate a response and is not used to train models.
         </p>
 
         <h2>We do not sell your data</h2>
