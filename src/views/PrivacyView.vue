@@ -4,7 +4,7 @@
       <div class="wrap p-nav-inner">
         <router-link to="/" class="p-brand">
           <img :src="eye" alt="" class="p-eye" />
-          <span class="p-name">OYAN<span class="p-ai"> AI</span></span>
+          <span class="p-name">OYAN</span>
         </router-link>
         <div class="lang">
           <button class="lang-btn" :class="{ on: lang === 'ru' }" @click="lang = 'ru'">РУС</button>
@@ -20,7 +20,7 @@
         <p class="updated">Обновлено: 4 июля 2026</p>
 
         <p>
-          Oyan AI — приложение для привычек и продуктивности. Мы собираем только те данные,
+          Oyan — приложение для привычек и продуктивности. Мы собираем только те данные,
           которые нужны для работы приложения, и бережно к ним относимся.
         </p>
 
@@ -82,7 +82,7 @@
         <p class="updated">Last updated: July 4, 2026</p>
 
         <p>
-          Oyan AI is a habit and productivity app. We collect only the data required for the app
+          Oyan is a habit and productivity app. We collect only the data required for the app
           to work, and we treat it with care.
         </p>
 
@@ -143,7 +143,7 @@
 
     <footer class="p-footer">
       <div class="wrap">
-        <span class="p-note">© {{ year }} Oyan AI</span>
+        <span class="p-note">© {{ year }} Oyan</span>
       </div>
     </footer>
   </div>

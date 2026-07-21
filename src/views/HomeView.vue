@@ -5,7 +5,7 @@
       <div class="wrap nav-inner">
         <a href="#top" class="brand">
           <img :src="eye" alt="" class="brand-eye" />
-          <span class="brand-name">OYAN<span class="brand-ai"> AI</span></span>
+          <span class="brand-name">OYAN</span>
         </a>
         <nav class="nav-links">
           <a href="#features">Возможности</a>
@@ -19,12 +19,12 @@
     <section id="top" class="hero">
       <div class="hero-glow" ref="heroGlow" />
       <div class="wrap hero-inner" ref="heroInner">
-        <img :src="eye" alt="Oyan AI" class="hero-eye" />
+        <img :src="eye" alt="Oyan" class="hero-eye" />
         <h1 class="hero-title" v-assemble="80">
           Проснись.<br />Начни.<br /><span class="accent">Меняйся.</span>
         </h1>
         <p class="hero-sub" v-reveal="180">
-          Большие перемены начинаются с одного маленького шага. Oyan AI ведёт тебя за руку —
+          Большие перемены начинаются с одного маленького шага. Oyan ведёт тебя за руку —
           привычки, цели, рефлексия и личный наставник на базе искусственного интеллекта.
         </p>
         <div class="hero-actions" v-reveal="280">
@@ -159,9 +159,9 @@
 
     <footer class="footer">
       <div class="wrap footer-inner">
-        <span class="brand-name">OYAN<span class="brand-ai"> AI</span></span>
+        <span class="brand-name">OYAN</span>
         <router-link to="/privacy" class="footer-link">Политика конфиденциальности</router-link>
-        <span class="footer-note">© {{ year }} Oyan AI — меняй жизнь маленькими шагами</span>
+        <span class="footer-note">© {{ year }} Oyan — меняй жизнь маленькими шагами</span>
       </div>
     </footer>
   </div>
