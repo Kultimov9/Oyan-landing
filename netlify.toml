@@ -1,0 +1,15 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Публичные ключи Supabase (anon). Vite вшивает их в бандл при сборке,
+# они и так видны в клиенте — держать в секрете смысла нет. RLS защищает данные.
+[build.environment]
+  VITE_SUPABASE_URL = "https://lxrrpmyysbkebpdocawu.supabase.co"
+  VITE_SUPABASE_ANON_KEY = "sb_publishable_S8XI_rk9Vfq32vljoqVmXQ_AXAEIW3V"
+
+# SPA-fallback: прямой заход на /reset-password и /privacy отдаёт index.html.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
