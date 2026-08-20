@@ -4,35 +4,35 @@
       <img :src="eye" alt="" class="eye" />
 
       <template v-if="done">
-        <h1>Пароль обновлён</h1>
-        <p class="sub">Вернитесь в приложение Oyan и войдите с новым паролем.</p>
+        <h1>{{ t('reset.doneTitle') }}</h1>
+        <p class="sub">{{ t('reset.doneSub') }}</p>
       </template>
 
       <template v-else-if="!ready">
-        <h1>Восстановление пароля</h1>
-        <p class="sub">{{ error || 'Проверяем ссылку…' }}</p>
+        <h1>{{ t('reset.checkTitle') }}</h1>
+        <p class="sub">{{ error || t('reset.checking') }}</p>
       </template>
 
       <template v-else>
-        <h1>Новый пароль</h1>
-        <p class="sub">Придумайте новый пароль для входа.</p>
+        <h1>{{ t('reset.newTitle') }}</h1>
+        <p class="sub">{{ t('reset.newSub') }}</p>
         <input
           v-model="password"
           type="password"
           class="input"
-          placeholder="Новый пароль"
+          :placeholder="t('reset.phNew')"
           autocomplete="new-password"
         />
         <input
           v-model="confirm"
           type="password"
           class="input"
-          placeholder="Повторите пароль"
+          :placeholder="t('reset.phRepeat')"
           autocomplete="new-password"
         />
         <p v-if="error" class="err">{{ error }}</p>
         <button class="btn" :disabled="loading" @click="submit">
-          {{ loading ? 'Сохранение…' : 'Сохранить пароль' }}
+          {{ loading ? t('reset.saving') : t('reset.save') }}
         </button>
       </template>
     </div>
@@ -43,6 +43,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { supabase } from '../lib/supabase'
 import eye from '../assets/eye.png'
+import { t } from '../i18n'
 
 const ready = ref(false) // получена ли recovery-сессия из ссылки
 const done = ref(false)
@@ -66,7 +67,7 @@ onMounted(async () => {
 
   // Если через 2.5 с сессии нет — ссылка недействительна или истекла.
   setTimeout(() => {
-    if (!ready.value) error.value = 'Ссылка недействительна или устарела. Запросите новую в приложении.'
+    if (!ready.value) error.value = t('reset.linkInvalid')
   }, 2500)
 })
 
@@ -75,11 +76,11 @@ onUnmounted(() => sub?.unsubscribe())
 async function submit() {
   error.value = ''
   if (password.value.length < 6) {
-    error.value = 'Пароль должен быть не короче 6 символов'
+    error.value = t('reset.tooShort')
     return
   }
   if (password.value !== confirm.value) {
-    error.value = 'Пароли не совпадают'
+    error.value = t('reset.mismatch')
     return
   }
   loading.value = true

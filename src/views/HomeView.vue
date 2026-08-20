@@ -8,9 +8,10 @@
           <span class="brand-name">OYAN</span>
         </a>
         <nav class="nav-links">
-          <a href="#features">Возможности</a>
-          <a href="#ai">AI-наставник</a>
-          <a href="#get" class="nav-cta">Попробовать</a>
+          <a href="#features">{{ t('nav.features') }}</a>
+          <a href="#ai">{{ t('nav.ai') }}</a>
+          <LangSwitch />
+          <a href="#get" class="nav-cta">{{ t('nav.try') }}</a>
         </nav>
       </div>
     </header>
@@ -20,54 +21,32 @@
       <div class="hero-glow" ref="heroGlow" />
       <div class="wrap hero-inner" ref="heroInner">
         <img :src="eye" alt="Oyan" class="hero-eye" />
-        <h1 class="hero-title" v-assemble="80">
-          Проснись.<br />Начни.<br /><span class="accent">Меняйся.</span>
+        <h1 :key="locale" class="hero-title" v-assemble="80">
+          {{ t('hero.line1') }}<br />{{ t('hero.line2') }}<br /><span class="accent">{{
+            t('hero.line3')
+          }}</span>
         </h1>
-        <p class="hero-sub" v-reveal="180">
-          Большие перемены начинаются с одного маленького шага. Oyan ведёт тебя за руку —
-          привычки, цели, рефлексия и личный наставник на базе искусственного интеллекта.
-        </p>
+        <p class="hero-sub" v-reveal="180">{{ t('hero.sub') }}</p>
         <div class="hero-actions" v-reveal="280">
-          <a href="#get" class="btn btn-primary">Начать путь</a>
-          <a href="#features" class="btn btn-ghost">Как это работает</a>
+          <a href="#get" class="btn btn-primary">{{ t('hero.start') }}</a>
+          <a href="#features" class="btn btn-ghost">{{ t('hero.how') }}</a>
         </div>
       </div>
       <div class="scroll-hint">
-        <span>листай</span>
+        <span>{{ t('hero.scroll') }}</span>
         <div class="scroll-line" />
       </div>
     </section>
 
-    <!-- SCROLLYTELLING -->
-    <section class="scrolly" ref="scrollyEl" :style="{ height: steps.length * 100 + 'vh' }">
-      <div class="scrolly-stage">
-        <div class="scrolly-rail">
-          <span class="scrolly-rail-fill" :style="{ height: progress * 100 + '%' }" />
-        </div>
-        <div class="wrap">
-          <div
-            v-for="(s, i) in steps"
-            :key="i"
-            class="scrolly-step"
-            :class="{ active: i === activeStep, past: i < activeStep }"
-          >
-            <p class="scrolly-index">0{{ i + 1 }} / 0{{ steps.length }}</p>
-            <h2 class="scrolly-title" v-assemble>{{ s.title }}</h2>
-            <p class="scrolly-sub" v-assemble="250">{{ s.sub }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- SHOWCASE (scroll-driven) -->
-    <PhoneShowcase />
+    <!-- ПУТЕШЕСТВИЕ ВОКРУГ ОДНОГО ОБЪЕКТА (scroll-driven 3D) -->
+    <PhoneJourney />
 
     <!-- FEATURES -->
     <section id="features" class="section">
       <div class="wrap">
-        <p class="eyebrow" v-reveal>Что внутри</p>
-        <h2 class="section-title" v-assemble="60">
-          Всё, чтобы двигаться<br />маленькими шагами
+        <p class="eyebrow" v-reveal>{{ t('features.eyebrow') }}</p>
+        <h2 :key="locale" class="section-title" v-assemble="60">
+          {{ t('features.title1') }}<br />{{ t('features.title2') }}
         </h2>
         <div class="grid">
           <div
@@ -88,12 +67,11 @@
     <section id="ai" class="section ai-section">
       <div class="wrap ai-inner">
         <div class="ai-copy">
-          <p class="eyebrow" v-reveal:left>Личный AI-наставник</p>
-          <h2 class="section-title" v-assemble="60">Он знает тебя<br />и зовёт вперёд</h2>
-          <p class="ai-lead" v-reveal:left="140">
-            В основе — модель Claude от Anthropic. Наставник видит твои привычки, цели и
-            настроение, и говорит с тобой как живой человек: тепло, по делу, без давления.
-          </p>
+          <p class="eyebrow" v-reveal:left>{{ t('ai.eyebrow') }}</p>
+          <h2 :key="locale" class="section-title" v-assemble="60">
+            {{ t('ai.title1') }}<br />{{ t('ai.title2') }}
+          </h2>
+          <p class="ai-lead" v-reveal:left="140">{{ t('ai.lead') }}</p>
           <ul class="ai-list">
             <li v-for="(a, i) in aiPoints" :key="a" v-reveal:left="60 + i * 70">
               <span class="tick">→</span>{{ a }}
@@ -106,13 +84,10 @@
               <img :src="eye" alt="" class="ai-card-eye" />
               <span>OYAN</span>
             </div>
-            <p class="ai-card-msg" v-reveal:right="300">
-              Привет. Вижу, ты уже размялся сегодня — хороший старт. Может, найдёшь пять минут
-              почитать, пока настрой ещё с тобой?
-            </p>
+            <p class="ai-card-msg" v-reveal:right="300">{{ t('ai.msg') }}</p>
             <div class="ai-card-actions">
-              <span class="ai-btn ai-btn-primary" v-reveal:left="420">Начать 5 минут →</span>
-              <span class="ai-btn ai-btn-ghost" v-reveal="520">Не сейчас — напомни вечером</span>
+              <span class="ai-btn ai-btn-primary" v-reveal:left="420">{{ t('ai.btnPrimary') }}</span>
+              <span class="ai-btn ai-btn-ghost" v-reveal="520">{{ t('ai.btnGhost') }}</span>
             </div>
           </div>
         </div>
@@ -122,20 +97,24 @@
     <!-- STATS / PROGRESS -->
     <section class="section">
       <div class="wrap">
-        <p class="eyebrow" v-reveal>Видно каждый шаг</p>
-        <h2 class="section-title" v-assemble="60">Прогресс, который<br />хочется продолжать</h2>
+        <p class="eyebrow" v-reveal>{{ t('stats.eyebrow') }}</p>
+        <h2 :key="locale" class="section-title" v-assemble="60">
+          {{ t('stats.title1') }}<br />{{ t('stats.title2') }}
+        </h2>
         <div class="stats">
           <div class="stat" v-reveal:zoom="60">
             <span class="stat-num" v-countup="7">7</span>
-            <span class="stat-label">дней подряд — и привычка закрепляется</span>
+            <span class="stat-label">{{ t('stats.label1') }}</span>
           </div>
           <div class="stat" v-reveal:zoom="150">
-            <span class="stat-num" v-countup="5" data-suffix=" мин">5 мин</span>
-            <span class="stat-label">достаточно, чтобы начать сегодня</span>
+            <span :key="locale" class="stat-num" v-countup="5" :data-suffix="t('stats.minSuffix')">
+              5{{ t('stats.minSuffix') }}
+            </span>
+            <span class="stat-label">{{ t('stats.label2') }}</span>
           </div>
           <div class="stat" v-reveal:zoom="240">
             <span class="stat-num">∞</span>
-            <span class="stat-label">маленьких шагов до большой цели</span>
+            <span class="stat-label">{{ t('stats.label3') }}</span>
           </div>
         </div>
       </div>
@@ -146,13 +125,11 @@
       <div class="cta-glow" />
       <div class="wrap cta-inner">
         <img :src="eye" alt="" class="cta-eye" v-reveal />
-        <h2 class="cta-title" v-assemble="80">Пора просыпаться</h2>
-        <p class="cta-sub" v-reveal="160">
-          Один шаг сегодня — и завтрашний ты скажет спасибо.
-        </p>
+        <h2 :key="locale" class="cta-title" v-assemble="80">{{ t('cta.title') }}</h2>
+        <p class="cta-sub" v-reveal="160">{{ t('cta.sub') }}</p>
         <div class="hero-actions" v-reveal="240">
-          <span class="btn btn-primary">Скоро в App Store</span>
-          <span class="btn btn-ghost">Скоро в Google Play</span>
+          <span class="btn btn-primary">{{ t('cta.appStore') }}</span>
+          <span class="btn btn-ghost">{{ t('cta.googlePlay') }}</span>
         </div>
       </div>
     </section>
@@ -160,70 +137,39 @@
     <footer class="footer">
       <div class="wrap footer-inner">
         <span class="brand-name">OYAN</span>
-        <router-link to="/privacy" class="footer-link">Политика конфиденциальности</router-link>
-        <span class="footer-note">© {{ year }} Oyan — меняй жизнь маленькими шагами</span>
+        <router-link to="/privacy" class="footer-link">{{ t('footer.privacy') }}</router-link>
+        <span class="footer-note">© {{ year }} Oyan — {{ t('footer.note') }}</span>
       </div>
     </footer>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import eye from '../assets/eye.png'
-import PhoneShowcase from '../components/PhoneShowcase.vue'
+import PhoneJourney from '../components/PhoneJourney.vue'
+import LangSwitch from '../components/LangSwitch.vue'
+import { t, locale, applyDocumentLocale } from '../i18n'
 
 const year = new Date().getFullYear()
 
-const steps = [
-  {
-    title: 'Ты хочешь изменить жизнь.',
-    sub: 'Больше спорта, меньше прокрастинации, новое дело. Желание есть.',
-  },
-  {
-    title: 'Но большие цели пугают.',
-    sub: 'Их так много, что не знаешь, с чего начать — и всё откладывается на потом.',
-  },
-  {
-    title: 'Секрет проще, чем кажется.',
-    sub: 'Не рывок, а один маленький шаг, который легко сделать прямо сейчас.',
-  },
-  {
-    title: 'Сегодня. Завтра. Каждый день.',
-    sub: 'Маленькие шаги складываются в привычку, а привычки — в новую жизнь.',
-  },
-  {
-    title: 'Oyan пройдёт этот путь с тобой.',
-    sub: 'Напомнит, поддержит и подскажет — так, будто рядом заботливый наставник.',
-  },
-]
+// Иконки не переводятся — берём их отдельно и склеиваем с текстом локали.
+const FEATURE_ICONS = ['◆', '✓', '◎', '☾', '▦', '❋']
 
-const features = [
-  { icon: '◆', title: 'Привычки', text: 'Трекер с таймером и сериями (streak). Начни дело в один тап и доведи до конца.' },
-  { icon: '✓', title: 'Задачи на день', text: 'Короткий список важного на сегодня — без хаоса и бесконечных списков.' },
-  { icon: '◎', title: 'Цели по шагам', text: 'Большую цель разбиваешь на шаги с дедлайном и видишь, как приближаешься.' },
-  { icon: '☾', title: 'Рефлексия', text: 'Пара минут вечером: настроение, что мешало, короткая заметка о дне.' },
-  { icon: '▦', title: 'Прогресс', text: 'Тепловая карта и графики показывают ритм — и мотивируют не бросать.' },
-  { icon: '❋', title: 'Умные напоминания', text: 'AI подбирает время и слова под твой день, а не шлёт одинаковые пуши.' },
-]
+const features = computed(() =>
+  t('features.items').map((f, i) => ({ icon: FEATURE_ICONS[i], title: f.title, text: f.text })),
+)
 
-const aiPoints = [
-  'Встречает персональным приветствием и зовёт на первый шаг',
-  'Отвечает в чате с полным контекстом твоих привычек и целей',
-  'Придумывает напоминания под твой день, а не шаблонные',
-  'Говорит тепло и коротко, без канцелярита и давления',
-]
+const aiPoints = computed(() => t('ai.points'))
 
 // Направление прилёта карточек: левая колонка — слева, средняя — снизу, правая — справа.
 function cardDir(i) {
   return ['left', null, 'right'][i % 3]
 }
 
-// --- Скроллителлинг + параллакс hero ---
-const scrollyEl = ref(null)
+// --- Параллакс hero ---
 const heroGlow = ref(null)
 const heroInner = ref(null)
-const activeStep = ref(0)
-const progress = ref(0)
 let ticking = false
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
@@ -231,15 +177,6 @@ function onScroll() {
   if (ticking) return
   ticking = true
   requestAnimationFrame(() => {
-    const el = scrollyEl.value
-    if (el) {
-      const rect = el.getBoundingClientRect()
-      const total = rect.height - window.innerHeight
-      const p = total > 0 ? Math.min(Math.max(-rect.top / total, 0), 1) : 0
-      progress.value = p
-      activeStep.value = Math.min(steps.length - 1, Math.floor(p * steps.length))
-    }
-
     // Параллакс: глоу уплывает медленнее контента, hero мягко тает при уходе вниз.
     if (!reducedMotion) {
       const y = window.scrollY
@@ -254,6 +191,8 @@ function onScroll() {
 }
 
 onMounted(() => {
+  // lang, <title> и description под выбранный язык — важно для SEO и скринридеров.
+  applyDocumentLocale()
   window.addEventListener('scroll', onScroll, { passive: true })
   onScroll()
 })
@@ -438,74 +377,6 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   50% {
     opacity: 1;
   }
-}
-
-/* SCROLLYTELLING */
-.scrolly {
-  position: relative;
-}
-.scrolly-stage {
-  position: sticky;
-  top: 0;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-.scrolly-rail {
-  position: absolute;
-  left: max(24px, calc((100vw - var(--maxw)) / 2 + 24px));
-  top: 28vh;
-  bottom: 28vh;
-  width: 2px;
-  background: var(--border);
-  border-radius: 2px;
-}
-.scrolly-rail-fill {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background: var(--accent);
-  border-radius: 2px;
-  transition: height 0.15s linear;
-}
-.scrolly .wrap {
-  position: relative;
-  padding-left: 60px;
-}
-.scrolly-step {
-  position: absolute;
-  max-width: 720px;
-  opacity: 0;
-  transform: translateY(40px);
-  transition:
-    opacity 0.6s ease,
-    transform 0.6s ease;
-  pointer-events: none;
-}
-.scrolly-step.active {
-  opacity: 1;
-  transform: none;
-  position: relative;
-}
-.scrolly-step.past {
-  transform: translateY(-40px);
-}
-.scrolly-index {
-  font-size: 13px;
-  letter-spacing: 0.2em;
-  color: var(--muted);
-  margin-bottom: 20px;
-}
-.scrolly-title {
-  font-size: clamp(34px, 6vw, 68px);
-  margin-bottom: 20px;
-}
-.scrolly-sub {
-  font-size: clamp(16px, 2.4vw, 21px);
-  color: var(--text-2);
-  max-width: 560px;
 }
 
 /* SECTIONS */
@@ -750,9 +621,6 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   }
   .section {
     padding: 90px 0;
-  }
-  .scrolly .wrap {
-    padding-left: 44px;
   }
 }
 </style>

@@ -2,30 +2,30 @@
   <div class="join">
     <div class="card">
       <img :src="eye" alt="" class="eye" />
-      <h1>Тебя пригласили</h1>
-      <p class="sub">Присоединяйся к парной привычке в Oyan — вы будете видеть прогресс друг друга каждый день.</p>
+      <h1>{{ t('join.title') }}</h1>
+      <p class="sub">{{ t('join.sub') }}</p>
 
       <div class="code-box">
-        <span class="code-label">Код приглашения</span>
+        <span class="code-label">{{ t('join.codeLabel') }}</span>
         <span class="code">{{ code }}</span>
       </div>
 
-      <a class="btn btn-primary" :href="deepLink">Открыть в Oyan</a>
+      <a class="btn btn-primary" :href="deepLink">{{ t('join.open') }}</a>
       <button class="btn btn-ghost" @click="copy">
-        {{ copied ? 'Код скопирован' : 'Скопировать код' }}
+        {{ copied ? t('join.copied') : t('join.copy') }}
       </button>
 
       <div class="steps">
-        <p class="steps-title">Нет приложения или кнопка не сработала?</p>
+        <p class="steps-title">{{ t('join.stepsTitle') }}</p>
         <ol>
-          <li>Установи Oyan и войди.</li>
-          <li>Открой вкладку «Привычки».</li>
-          <li>Внизу секции «Парные привычки» нажми «У меня есть код от друга».</li>
-          <li>Вставь код <b>{{ code }}</b>.</li>
+          <li>{{ t('join.step1') }}</li>
+          <li>{{ t('join.step2') }}</li>
+          <li>{{ t('join.step3') }}</li>
+          <li>{{ t('join.step4') }} <b>{{ code }}</b>.</li>
         </ol>
       </div>
 
-      <router-link to="/" class="home-link">← На главную</router-link>
+      <router-link to="/" class="home-link">{{ t('join.home') }}</router-link>
     </div>
   </div>
 </template>
@@ -34,9 +34,10 @@
 import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import eye from '../assets/eye.png'
+import { t } from '../i18n'
 
 const route = useRoute()
-const code = computed(() => String(route.params.code || '').toUpperCase())
+const code = computed(() => String(route.params.code || ''))
 const deepLink = computed(() => `oyan://join/${code.value}`)
 const copied = ref(false)
 
