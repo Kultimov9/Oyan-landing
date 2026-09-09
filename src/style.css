@@ -36,67 +36,8 @@ body {
   line-height: 1.5;
 }
 
-/* ФОН САЙТА — три слоя, все fixed и не ловят курсор.
-   1) тёплое свечение цвета акцента, медленно дышит;
-   2) тонкая сетка, растворяющаяся к краям;
-   3) плёночное зерно + виньетка. */
-html::before,
-body::before,
-body::after {
-  content: '';
-  position: fixed;
-  pointer-events: none;
-  z-index: -1;
-}
-
-/* 1. Свечение */
-html::before {
-  inset: -12%;
-  background:
-    radial-gradient(46% 38% at 16% 14%, rgba(245, 240, 232, 0.08), transparent 70%),
-    radial-gradient(42% 34% at 84% 28%, rgba(245, 240, 232, 0.055), transparent 70%),
-    radial-gradient(58% 46% at 52% 104%, rgba(245, 240, 232, 0.05), transparent 72%);
-  animation: bg-drift 46s ease-in-out infinite;
-}
-
-/* 2. Сетка */
-body::before {
-  inset: 0;
-  background:
-    repeating-linear-gradient(
-      0deg,
-      rgba(245, 240, 232, 0.022) 0 1px,
-      transparent 1px 76px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(245, 240, 232, 0.022) 0 1px,
-      transparent 1px 76px
-    );
-  -webkit-mask-image: radial-gradient(125% 85% at 50% 28%, #000 18%, transparent 76%);
-  mask-image: radial-gradient(125% 85% at 50% 28%, #000 18%, transparent 76%);
-}
-
-/* 3. Зерно + виньетка.
-   Шум обесцвечен через feColorMatrix — иначе feTurbulence даёт цветные крапинки,
-   что выбивается из монохрома. Силу зерна задаёт opacity внутри SVG, силу
-   виньетки — альфа градиента, поэтому они настраиваются независимо. */
-body::after {
-  inset: 0;
-  background:
-    radial-gradient(125% 100% at 50% 38%, transparent 42%, rgba(0, 0, 0, 0.45) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
-}
-
-@keyframes bg-drift {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) scale(1);
-  }
-  50% {
-    transform: translate3d(-2.2%, -1.6%, 0) scale(1.07);
-  }
-}
+/* Фон вынесен в SiteBackground.vue: слои должны двигаться от прокрутки,
+   а псевдоэлементы для этого неудобны — им не задать разные скорости. */
 
 h1,
 h2,
@@ -183,9 +124,6 @@ a {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-  html::before {
-    animation: none;
   }
   .reveal {
     transition: none;

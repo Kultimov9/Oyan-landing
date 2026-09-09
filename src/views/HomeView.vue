@@ -17,17 +17,17 @@
     </header>
 
     <!-- HERO -->
-    <section id="top" class="hero">
-      <div class="hero-glow" ref="heroGlow" />
-      <div class="wrap hero-inner" ref="heroInner">
+    <section id="top" class="hero" ref="heroEl">
+      <div class="hero-glow" />
+      <div class="wrap hero-inner">
         <img :src="eye" alt="Oyan" class="hero-eye" />
-        <h1 :key="locale" class="hero-title" v-assemble="80">
+        <h1 :key="locale" class="hero-title">
           {{ t('hero.line1') }}<br />{{ t('hero.line2') }}<br /><span class="accent">{{
             t('hero.line3')
           }}</span>
         </h1>
-        <p class="hero-sub" v-reveal="180">{{ t('hero.sub') }}</p>
-        <div class="hero-actions" v-reveal="280">
+        <p class="hero-sub">{{ t('hero.sub') }}</p>
+        <div class="hero-actions">
           <a href="#get" class="btn btn-primary">{{ t('hero.start') }}</a>
           <a href="#features" class="btn btn-ghost">{{ t('hero.how') }}</a>
         </div>
@@ -42,52 +42,50 @@
     <PhoneJourney />
 
     <!-- FEATURES -->
-    <section id="features" class="section">
+    <section id="features" class="section" ref="featuresSectionEl">
       <div class="wrap">
-        <p class="eyebrow" v-reveal>{{ t('features.eyebrow') }}</p>
-        <h2 :key="locale" class="section-title" v-assemble="60">
+        <p class="eyebrow">{{ t('features.eyebrow') }}</p>
+        <h2 class="section-title">
           {{ t('features.title1') }}<br />{{ t('features.title2') }}
         </h2>
-        <div class="grid">
-          <div
-            v-for="(f, i) in features"
-            :key="f.title"
-            class="card"
-            v-reveal:zoom="(i % 3) * 70"
-          >
-            <div class="card-icon" v-reveal:left="140 + (i % 3) * 70">{{ f.icon }}</div>
-            <h3 class="card-title" v-reveal:right="220 + (i % 3) * 70">{{ f.title }}</h3>
-            <p class="card-text" v-reveal="300 + (i % 3) * 70">{{ f.text }}</p>
+        <!-- Карточки двигаются как одна группа от позиции скролла: внутренние
+             элементы отдельно не анимируются, иначе на экране слишком много
+             независимого движения. -->
+        <div class="grid" ref="featuresEl">
+          <div v-for="f in features" :key="f.title" class="card">
+            <div class="card-icon">{{ f.icon }}</div>
+            <h3 class="card-title">{{ f.title }}</h3>
+            <p class="card-text">{{ f.text }}</p>
           </div>
         </div>
       </div>
     </section>
 
     <!-- AI -->
-    <section id="ai" class="section ai-section">
+    <section id="ai" class="section ai-section" ref="aiEl">
       <div class="wrap ai-inner">
         <div class="ai-copy">
-          <p class="eyebrow" v-reveal:left>{{ t('ai.eyebrow') }}</p>
-          <h2 :key="locale" class="section-title" v-assemble="60">
-            {{ t('ai.title1') }}<br />{{ t('ai.title2') }}
-          </h2>
-          <p class="ai-lead" v-reveal:left="140">{{ t('ai.lead') }}</p>
+          <p class="eyebrow">{{ t('ai.eyebrow') }}</p>
+          <h2 class="section-title">{{ t('ai.title1') }}<br />{{ t('ai.title2') }}</h2>
+          <p class="ai-lead">{{ t('ai.lead') }}</p>
           <ul class="ai-list">
-            <li v-for="(a, i) in aiPoints" :key="a" v-reveal:left="60 + i * 70">
+            <!-- Пункты проявляются по очереди по мере прокрутки: --i задаёт
+                 сдвиг очереди, сама очередь считается в CSS от --p. -->
+            <li v-for="(a, i) in aiPoints" :key="a" :style="{ '--i': i }">
               <span class="tick">→</span>{{ a }}
             </li>
           </ul>
         </div>
-        <div class="ai-card-wrap" v-reveal:right="120">
+        <div class="ai-card-wrap">
           <div class="ai-card">
-            <div class="ai-card-head" v-reveal:down="200">
+            <div class="ai-card-head">
               <img :src="eye" alt="" class="ai-card-eye" />
               <span>OYAN</span>
             </div>
-            <p class="ai-card-msg" v-reveal:right="300">{{ t('ai.msg') }}</p>
+            <p class="ai-card-msg">{{ t('ai.msg') }}</p>
             <div class="ai-card-actions">
-              <span class="ai-btn ai-btn-primary" v-reveal:left="420">{{ t('ai.btnPrimary') }}</span>
-              <span class="ai-btn ai-btn-ghost" v-reveal="520">{{ t('ai.btnGhost') }}</span>
+              <span class="ai-btn ai-btn-primary">{{ t('ai.btnPrimary') }}</span>
+              <span class="ai-btn ai-btn-ghost">{{ t('ai.btnGhost') }}</span>
             </div>
           </div>
         </div>
@@ -95,24 +93,21 @@
     </section>
 
     <!-- STATS / PROGRESS -->
-    <section class="section">
+    <section class="section" ref="statsEl">
       <div class="wrap">
-        <p class="eyebrow" v-reveal>{{ t('stats.eyebrow') }}</p>
-        <h2 :key="locale" class="section-title" v-assemble="60">
-          {{ t('stats.title1') }}<br />{{ t('stats.title2') }}
-        </h2>
+        <p class="eyebrow">{{ t('stats.eyebrow') }}</p>
+        <h2 class="section-title">{{ t('stats.title1') }}<br />{{ t('stats.title2') }}</h2>
         <div class="stats">
-          <div class="stat" v-reveal:zoom="60">
-            <span class="stat-num" v-countup="7">7</span>
+          <!-- Цифры набегают вместе с прокруткой: крутишь назад — уменьшаются. -->
+          <div class="stat" :style="{ '--i': 0 }">
+            <span class="stat-num">{{ countTo(7) }}</span>
             <span class="stat-label">{{ t('stats.label1') }}</span>
           </div>
-          <div class="stat" v-reveal:zoom="150">
-            <span :key="locale" class="stat-num" v-countup="5" :data-suffix="t('stats.minSuffix')">
-              5{{ t('stats.minSuffix') }}
-            </span>
+          <div class="stat" :style="{ '--i': 1 }">
+            <span class="stat-num">{{ countTo(5) }}{{ t('stats.minSuffix') }}</span>
             <span class="stat-label">{{ t('stats.label2') }}</span>
           </div>
-          <div class="stat" v-reveal:zoom="240">
+          <div class="stat" :style="{ '--i': 2 }">
             <span class="stat-num">∞</span>
             <span class="stat-label">{{ t('stats.label3') }}</span>
           </div>
@@ -121,15 +116,26 @@
     </section>
 
     <!-- CTA -->
-    <section id="get" class="cta">
+    <section id="get" class="cta" ref="ctaEl">
       <div class="cta-glow" />
       <div class="wrap cta-inner">
-        <img :src="eye" alt="" class="cta-eye" v-reveal />
-        <h2 :key="locale" class="cta-title" v-assemble="80">{{ t('cta.title') }}</h2>
-        <p class="cta-sub" v-reveal="160">{{ t('cta.sub') }}</p>
-        <div class="hero-actions" v-reveal="240">
-          <span class="btn btn-primary">{{ t('cta.appStore') }}</span>
-          <span class="btn btn-ghost">{{ t('cta.googlePlay') }}</span>
+        <img :src="eye" alt="" class="cta-eye" />
+        <h2 class="cta-title">{{ t('cta.title') }}</h2>
+        <p class="cta-sub">{{ t('cta.sub') }}</p>
+        <div class="hero-actions">
+          <!-- Появилась ссылка — кнопка сама становится ссылкой (см. STORES) -->
+          <component
+            v-for="store in stores"
+            :key="store.key"
+            :is="store.url ? 'a' : 'span'"
+            :href="store.url || undefined"
+            :target="store.url ? '_blank' : undefined"
+            rel="noopener"
+            class="btn"
+            :class="store.primary ? 'btn-primary' : 'btn-ghost'"
+          >
+            {{ store.url ? t(store.keyReady) : t(store.keySoon) }}
+          </component>
         </div>
       </div>
     </section>
@@ -145,16 +151,41 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import eye from '../assets/eye.png'
 import PhoneJourney from '../components/PhoneJourney.vue'
+import { useScrollProgress } from '../composables/useScrollProgress'
 import LangSwitch from '../components/LangSwitch.vue'
 import { t, locale, applyDocumentLocale } from '../i18n'
 
 const year = new Date().getFullYear()
 
+// Ссылки на магазины в одном месте: как появится адрес в App Store Connect —
+// вписать сюда, и кнопка сама превратится в ссылку с другим текстом.
+// Google Play скрыт: Android-сборка пока без пуш-уведомлений и в стор не идёт.
+// Чтобы вернуть — снять show: false.
+const STORES = [
+  {
+    key: 'ios',
+    url: '',
+    primary: true,
+    keySoon: 'cta.appStore',
+    keyReady: 'cta.appStoreReady',
+    show: true,
+  },
+  {
+    key: 'android',
+    url: '',
+    primary: false,
+    keySoon: 'cta.googlePlay',
+    keyReady: 'cta.googlePlayReady',
+    show: false,
+  },
+]
+const stores = STORES.filter((s) => s.show)
+
 // Иконки не переводятся — берём их отдельно и склеиваем с текстом локали.
-const FEATURE_ICONS = ['◆', '✓', '◎', '☾', '▦', '❋']
+const FEATURE_ICONS = ['◆', '✓', '◎', '☾', '▦', '❋', '◈', '⊛', '↺']
 
 const features = computed(() =>
   t('features.items').map((f, i) => ({ icon: FEATURE_ICONS[i], title: f.title, text: f.text })),
@@ -162,41 +193,42 @@ const features = computed(() =>
 
 const aiPoints = computed(() => t('ai.points'))
 
-// Направление прилёта карточек: левая колонка — слева, средняя — снизу, правая — справа.
-function cardDir(i) {
-  return ['left', null, 'right'][i % 3]
-}
-
 // --- Параллакс hero ---
-const heroGlow = ref(null)
-const heroInner = ref(null)
-let ticking = false
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+// Все секции подключены к одному движку прогресса: он раздаёт долю пройденного
+// пути в CSS-переменную --p, а секции двигают содержимое чистым CSS.
+// Отдельных слушателей скролла больше нет — раньше их было три.
+const heroEl = ref(null)
+useScrollProgress(heroEl)
 
-function onScroll() {
-  if (ticking) return
-  ticking = true
-  requestAnimationFrame(() => {
-    // Параллакс: глоу уплывает медленнее контента, hero мягко тает при уходе вниз.
-    if (!reducedMotion) {
-      const y = window.scrollY
-      if (heroGlow.value) heroGlow.value.style.transform = `translate(-50%, ${y * 0.3}px)`
-      if (heroInner.value && y < window.innerHeight) {
-        heroInner.value.style.opacity = String(Math.max(1 - y / (window.innerHeight * 0.85), 0))
-        heroInner.value.style.transform = `translateY(${y * 0.16}px)`
-      }
-    }
-    ticking = false
-  })
+// Прогресс считаем по самой сетке, а не по секции: секция начинается с
+// заголовка, и по ней карточки успевали собраться ещё до появления на экране.
+const featuresSectionEl = ref(null)
+useScrollProgress(featuresSectionEl)
+
+const featuresEl = ref(null)
+useScrollProgress(featuresEl)
+
+const aiEl = ref(null)
+useScrollProgress(aiEl)
+
+const ctaEl = ref(null)
+useScrollProgress(ctaEl)
+
+// Цифрам нужен прогресс числом: текст в CSS не посчитать.
+const statsEl = ref(null)
+const statsP = ref(0)
+useScrollProgress(statsEl, statsP)
+
+// Счётчик набегает на первой половине прохода секции и держится дальше.
+function countTo(target) {
+  const t = Math.min(1, Math.max(0, (statsP.value - 0.1) / 0.4))
+  return Math.round(target * t)
 }
 
 onMounted(() => {
   // lang, <title> и description под выбранный язык — важно для SEO и скринридеров.
   applyDocumentLocale()
-  window.addEventListener('scroll', onScroll, { passive: true })
-  onScroll()
 })
-onUnmounted(() => window.removeEventListener('scroll', onScroll))
 </script>
 
 <style scoped>
@@ -394,19 +426,54 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 18px;
+  /* Перспектива на контейнере: без неё rotateX даёт плоский сдвиг, а не глубину */
+  perspective: 1400px;
+  perspective-origin: 50% 40%;
 }
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: 30px;
+  /* Сборка: 0 — карточка ещё в стороне, 1 — на месте. Сетка входит в экран на
+     p≈0 и оказывается по центру на p≈0.5, поэтому сборка укладывается в
+     0.05–0.45 — она целиком происходит на глазах, а не за кадром. */
+  --enter: clamp(0, calc((var(--p, 1) - 0.02) / 0.45), 1);
+  /* Сквозной снос: после сборки движение не замирает, поэтому скролл
+     туда-обратно всегда что-то двигает. */
+  --drift: calc((var(--p, 1) - 0.5) * -60px);
+  --x: calc(var(--dx, 0px) * (1 - var(--enter)));
+  --y: calc(var(--dy, 40px) * (1 - var(--enter)) + var(--drift));
+  --scale: calc(0.82 + 0.18 * var(--enter));
+  /* Карточка выходит из глубины: отъезд по Z и наклон выпрямляются к сборке. */
+  --z: calc((1 - var(--enter)) * -320px);
+  --rot: calc((1 - var(--enter)) * 14deg);
+  transform: translate3d(var(--x), calc(var(--y) + var(--lift, 0px)), var(--z))
+    rotateX(var(--rot)) scale(var(--scale));
+  transform-style: preserve-3d;
+  opacity: var(--enter);
+  /* transform без transition: движение привязано к скроллу, сглаживание дало бы
+     отставание от пальца. Анимируем только transform и opacity. */
   transition:
-    transform 0.3s ease,
     border-color 0.3s ease,
     background 0.3s ease;
+  will-change: transform, opacity;
+}
+/* Крайние колонки приезжают с боков, средняя — снизу. */
+.card:nth-child(3n + 1) {
+  --dx: -190px;
+  --dy: 60px;
+}
+.card:nth-child(3n + 2) {
+  --dx: 0px;
+  --dy: 150px;
+}
+.card:nth-child(3n + 3) {
+  --dx: 190px;
+  --dy: 60px;
 }
 .card:hover {
-  transform: translateY(-4px);
+  --lift: -4px;
   border-color: #333;
   background: var(--surface-2);
 }
@@ -615,6 +682,13 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   .stats {
     grid-template-columns: 1fr;
   }
+  /* В одну колонку боковой разлёт не нужен — карточки приезжают только снизу. */
+  .card:nth-child(3n + 1),
+  .card:nth-child(3n + 2),
+  .card:nth-child(3n + 3) {
+    --dx: 0px;
+    --dy: 60px;
+  }
   .ai-inner {
     grid-template-columns: 1fr;
     gap: 36px;
@@ -622,5 +696,86 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   .section {
     padding: 90px 0;
   }
+}
+
+/* ── Привязка к прокрутке ─────────────────────────────────────────────────
+   Каждая секция получает --p (0 — только показалась снизу, 1 — ушла вверх)
+   от общего движка. Всё движение ниже — чистая функция от неё, поэтому оно
+   обратимо: крутишь назад — элементы едут назад.
+   Двигаем только transform и opacity — это не вызывает пересчёт раскладки. */
+
+/* Первый экран уходит вверх, а не входит снизу: на самом верху страницы его
+   середина совпадает с серединой экрана, то есть --p уже равен 0.5. Поэтому
+   отсчёт ведём от 0.5 — иначе hero был бы скрыт сразу при загрузке. */
+.hero-inner {
+  --out: clamp(0, calc((var(--p, 0.5) - 0.5) / 0.35), 1);
+  transform: translate3d(0, calc(var(--out) * 120px), 0) scale(calc(1 - var(--out) * 0.06));
+  opacity: calc(1 - var(--out));
+  will-change: transform, opacity;
+}
+.hero-glow {
+  transform: translate(-50%, calc(max(0, var(--p, 0.5) - 0.5) * 420px));
+  will-change: transform;
+}
+.scroll-hint {
+  opacity: calc(1 - clamp(0, calc((var(--p, 0.5) - 0.5) / 0.12), 1));
+}
+
+/* AI: текст приезжает слева, карточка справа, пункты списка — по очереди. */
+.ai-copy {
+  --in: clamp(0, calc((var(--p, 1) - 0.05) / 0.4), 1);
+  transform: translate3d(calc((1 - var(--in)) * -80px), 0, 0);
+  opacity: var(--in);
+  will-change: transform, opacity;
+}
+.ai-card-wrap {
+  --in: clamp(0, calc((var(--p, 1) - 0.1) / 0.4), 1);
+  perspective: 1200px;
+  opacity: var(--in);
+  will-change: transform, opacity;
+}
+.ai-card {
+  /* Карточка развёрнута к зрителю и выпрямляется по мере прокрутки. */
+  transform: translate3d(calc((1 - var(--in, 1)) * 90px), 0, calc((1 - var(--in, 1)) * -240px))
+    rotateY(calc((1 - var(--in, 1)) * -16deg));
+}
+.ai-list li {
+  /* Каждый следующий пункт стартует на 0.06 позже — очередь по прокрутке. */
+  --in: clamp(0, calc((var(--p, 1) - 0.18 - var(--i, 0) * 0.06) / 0.16), 1);
+  transform: translate3d(calc((1 - var(--in)) * -28px), 0, 0);
+  opacity: var(--in);
+}
+
+/* Цифры: карточки поднимаются по очереди, значения набегают в шаблоне. */
+.stats {
+  perspective: 1200px;
+}
+.stat {
+  --in: clamp(0, calc((var(--p, 1) - 0.08 - var(--i, 0) * 0.06) / 0.3), 1);
+  transform: translate3d(0, calc((1 - var(--in)) * 60px), calc((1 - var(--in)) * -260px))
+    rotateX(calc((1 - var(--in)) * 12deg))
+    scale(calc(0.88 + 0.12 * var(--in)));
+  opacity: var(--in);
+  will-change: transform, opacity;
+}
+
+/* Финал: свечение растёт по мере приближения, содержимое поднимается. */
+.cta-inner {
+  --in: clamp(0, calc((var(--p, 1) - 0.05) / 0.45), 1);
+  transform: translate3d(0, calc((1 - var(--in)) * 70px), 0);
+  opacity: var(--in);
+  will-change: transform, opacity;
+}
+.cta-glow {
+  transform: translate(-50%, 0) scale(calc(0.6 + var(--p, 0) * 0.8));
+  opacity: calc(0.3 + var(--p, 0) * 0.7);
+}
+
+/* Заголовки секций: лёгкий подъём, чтобы шапка не стояла мёртво. */
+.section .eyebrow,
+.section .section-title {
+  --in: clamp(0, calc((var(--p, 1) - 0.02) / 0.3), 1);
+  transform: translate3d(0, calc((1 - var(--in)) * 34px), 0);
+  opacity: var(--in);
 }
 </style>

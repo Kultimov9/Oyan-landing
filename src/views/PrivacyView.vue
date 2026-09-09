@@ -36,8 +36,27 @@
             как используется продукт, и делать его лучше.
           </li>
           <li>
-            <strong>Уведомления</strong> — приложение отправляет локальные напоминания на вашем
-            устройстве; настройки уведомлений хранятся только на устройстве.
+            <strong>Уведомления</strong> — приложение отправляет напоминания. Часть из них
+            локальные (планируются на устройстве), часть приходит с сервера. Для доставки
+            серверных уведомлений мы храним идентификатор push-подписки вашего устройства и
+            удаляем его при выходе из аккаунта.
+          </li>
+          <li>
+            <strong>Друзья</strong> — если вы добавляете друзей, мы храним связь между вашими
+            аккаунтами. Поиск других пользователей идёт по нику или по точному совпадению
+            почты; сама почта другим пользователям не показывается.
+          </li>
+          <li>
+            <strong>Совместные привычки</strong> — если вы ведёте привычку вдвоём, обоим
+            участникам видны отметки о выполнении по этой привычке.
+          </li>
+          <li>
+            <strong>Открытые привычки</strong> — каждую привычку можно открыть друзьям. По
+            умолчанию все привычки закрыты; открытые видны только тем, кто у вас в друзьях.
+          </li>
+          <li>
+            <strong>Язык интерфейса</strong> — сохраняется в профиле, чтобы уведомления
+            приходили на выбранном языке.
           </li>
         </ul>
 
@@ -45,7 +64,8 @@
         <p>
           Все данные хранятся в защищённой облачной базе данных
           <a href="https://supabase.com" target="_blank" rel="noopener">Supabase</a>.
-          Доступ к вашим данным есть только у вас — через ваш аккаунт.
+          Доступ к вашим данным есть только у вас — через ваш аккаунт. Исключение вы задаёте
+          сами: привычки, которые вы открыли друзьям, и совместные привычки видны участникам.
         </p>
 
         <h2>AI-функции</h2>
@@ -98,8 +118,27 @@
             understand product usage and improve it.
           </li>
           <li>
-            <strong>Notifications</strong> — the app delivers local reminders on your device;
-            notification settings are stored on your device only.
+            <strong>Notifications</strong> — the app sends reminders. Some are local (scheduled
+            on your device), others are delivered from our server. To deliver server
+            notifications we store your device's push subscription identifier and delete it when
+            you sign out.
+          </li>
+          <li>
+            <strong>Friends</strong> — if you add friends, we store the link between your
+            accounts. Other users can be found by username or by an exact email match; email
+            addresses are never shown to other users.
+          </li>
+          <li>
+            <strong>Shared habits</strong> — if you keep a habit together with a friend, both
+            participants can see completion records for that habit.
+          </li>
+          <li>
+            <strong>Public habits</strong> — each habit can be made visible to friends. All
+            habits are private by default; visible ones are shown only to your friends.
+          </li>
+          <li>
+            <strong>Interface language</strong> — stored in your profile so that notifications
+            are sent in the language you chose.
           </li>
         </ul>
 
@@ -107,7 +146,9 @@
         <p>
           All data is stored in a secure cloud database provided by
           <a href="https://supabase.com" target="_blank" rel="noopener">Supabase</a>.
-          Only you can access your data — through your account.
+          Only you can access your data — through your account. The only exceptions are ones you
+          create yourself: habits you make visible to friends, and shared habits, are visible to
+          the participants.
         </p>
 
         <h2>AI features</h2>
