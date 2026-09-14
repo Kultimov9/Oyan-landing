@@ -6,9 +6,23 @@
           <img :src="eye" alt="" class="p-eye" />
           <span class="p-name">OYAN</span>
         </router-link>
-        <div class="lang">
-          <button class="lang-btn" :class="{ on: lang === 'ru' }" @click="lang = 'ru'">РУС</button>
-          <button class="lang-btn" :class="{ on: lang === 'en' }" @click="lang = 'en'">ENG</button>
+        <div class="lang" role="group" aria-label="Язык / Language">
+          <button
+            class="lang-btn"
+            :class="{ on: lang === 'ru' }"
+            :aria-pressed="lang === 'ru'"
+            @click="lang = 'ru'"
+          >
+            РУС
+          </button>
+          <button
+            class="lang-btn"
+            :class="{ on: lang === 'en' }"
+            :aria-pressed="lang === 'en'"
+            @click="lang = 'en'"
+          >
+            ENG
+          </button>
         </div>
       </div>
     </header>
@@ -183,7 +197,8 @@
     </main>
 
     <footer class="p-footer">
-      <div class="wrap">
+      <div class="wrap p-footer-inner">
+        <span class="p-name">OYAN</span>
         <span class="p-note">© {{ year }} Oyan</span>
       </div>
     </footer>
@@ -199,13 +214,25 @@ const year = new Date().getFullYear()
 </script>
 
 <style scoped>
+/* Сплошной фон перекрывает анимированный фон сайта (SiteBackground): на
+   странице с длинным текстом движущиеся сетка и световой луч мешают читать,
+   а серый текст на светлом луче теряет контраст. */
 .privacy {
+  position: relative;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background: var(--bg);
 }
 
+/* Хедер как на главной: закреплён сверху, полупрозрачный с размытием. */
 .p-nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  background: rgba(10, 10, 10, 0.72);
   border-bottom: 1px solid var(--border);
 }
 .p-nav-inner {
@@ -214,10 +241,14 @@ const year = new Date().getFullYear()
   justify-content: space-between;
   height: 64px;
 }
+/* Логотип — тоже ссылка, поэтому явно снимаем стиль текстовых ссылок
+   (подчёркивание и акцентный цвет), который задан ниже для абзацев. */
 .p-brand {
   display: flex;
   align-items: center;
   gap: 10px;
+  color: var(--text);
+  text-decoration: none;
 }
 .p-eye {
   width: 34px;
@@ -229,29 +260,38 @@ const year = new Date().getFullYear()
   letter-spacing: 0.14em;
   font-size: 15px;
 }
-.p-ai {
-  color: var(--text-2);
-}
+/* Переключатель языка в том же виде, что LangSwitch на главной: общая
+   пилюля-группа, активный вариант залит акцентом. */
 .lang {
   display: flex;
-  gap: 6px;
+  align-items: center;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  flex-shrink: 0;
 }
 .lang-btn {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--text-2);
-  border-radius: 999px;
-  padding: 7px 14px;
-  font-size: 12px;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
+  padding: 5px 10px;
+  border-radius: 999px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+.lang-btn:hover {
+  color: var(--text-2);
 }
 .lang-btn.on {
   background: var(--accent);
   color: var(--bg);
-  border-color: var(--accent);
 }
 
 .p-body {
@@ -318,7 +358,14 @@ a {
 
 .p-footer {
   border-top: 1px solid var(--border);
-  padding: 24px 0;
+  padding: 30px 0;
+}
+.p-footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 .p-note {
   color: var(--muted);
