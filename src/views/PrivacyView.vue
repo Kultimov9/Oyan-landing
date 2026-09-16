@@ -31,7 +31,7 @@
       <!-- РУССКАЯ ВЕРСИЯ -->
       <article v-if="lang === 'ru'">
         <h1>Политика конфиденциальности</h1>
-        <p class="updated">Обновлено: 4 июля 2026</p>
+        <p class="updated">Обновлено: 16 сентября 2026</p>
 
         <p>
           Oyan — приложение для привычек и продуктивности. Мы собираем только те данные,
@@ -84,11 +84,24 @@
 
         <h2>AI-функции</h2>
         <p>
-          Для персональных советов, приветствий и напоминаний приложение отправляет контекст ваших
-          данных в API Anthropic (Claude): содержимое привычек, задач, целей и рефлексий (включая
-          текст задач и заметок), а также настроение. При этом email, идентификаторы и учётные
-          данные не передаются — контекст не привязан к вашей личности. Эти данные используются
-          только для генерации ответа и не применяются для обучения моделей.
+          AI-функции работают на стороннем сервисе — <strong>Anthropic (Claude API)</strong>,
+          расположенном в США. Приложение запрашивает ваше явное разрешение до первой отправки
+          данных; без него AI-коуч и умные напоминания не работают. Разрешение можно отозвать в
+          любой момент в профиле, в разделе «Данные для AI».
+        </p>
+        <p>
+          <strong>Что отправляется:</strong> названия привычек и отметки о выполнении, тексты
+          задач и целей, тексты рефлексий и настроение.
+        </p>
+        <p>
+          <strong>Что не отправляется:</strong> email, пароль, идентификатор аккаунта, аватар и
+          данные ваших друзей. Контекст не привязан к вашей личности.
+        </p>
+        <p>
+          <strong>Зачем:</strong> только для формирования ответа коуча, приветствия или текста
+          напоминания. Anthropic не использует эти данные для обучения моделей и обеспечивает
+          уровень защиты данных, сопоставимый с описанным в этой политике — см.
+          <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">политику конфиденциальности Anthropic</a>.
         </p>
 
         <h2>Мы не продаём ваши данные</h2>
@@ -99,8 +112,10 @@
 
         <h2>Удаление данных</h2>
         <p>
-          Вы можете запросить полное удаление аккаунта и всех связанных данных — просто напишите
-          нам.
+          Удалить аккаунт можно прямо в приложении: «Профиль» → «Удалить аккаунт». Вместе с
+          аккаунтом безвозвратно удаляются привычки, задачи, цели, рефлексии, дружбы, общие
+          привычки, аватар и идентификаторы push-подписок. Действие необратимо и не требует
+          обращения в поддержку.
         </p>
 
         <h2>Контакт</h2>
@@ -113,7 +128,7 @@
       <!-- ENGLISH VERSION -->
       <article v-else>
         <h1>Privacy Policy</h1>
-        <p class="updated">Last updated: July 4, 2026</p>
+        <p class="updated">Last updated: September 16, 2026</p>
 
         <p>
           Oyan is a habit and productivity app. We collect only the data required for the app
@@ -167,11 +182,24 @@
 
         <h2>AI features</h2>
         <p>
-          To provide personal coaching, greetings and reminders, the app sends context from your
-          data to the Anthropic API (Claude): the contents of your habits, tasks, goals and
-          reflections (including task text and notes), as well as your mood. Your email,
-          identifiers and credentials are never sent — the context is not tied to your identity.
-          This data is used only to generate a response and is not used to train models.
+          AI features are powered by a third-party service — <strong>Anthropic (Claude API)</strong>,
+          located in the United States. The app asks for your explicit permission before any data
+          is sent; without it, the AI coach and smart reminders do not work. You can withdraw this
+          permission at any time in your profile, under "AI data".
+        </p>
+        <p>
+          <strong>What is sent:</strong> habit names and completion records, the text of your
+          tasks and goals, and the text of your reflections along with your mood.
+        </p>
+        <p>
+          <strong>What is not sent:</strong> your email, password, account identifier, avatar, or
+          any data about your friends. The context is not tied to your identity.
+        </p>
+        <p>
+          <strong>Why:</strong> solely to generate a coaching reply, a greeting or the text of a
+          reminder. Anthropic does not use this data to train models and provides a level of data
+          protection equal to the one described in this policy — see
+          <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic's privacy policy</a>.
         </p>
 
         <h2>We do not sell your data</h2>
@@ -182,8 +210,10 @@
 
         <h2>Data deletion</h2>
         <p>
-          You can request complete deletion of your account and all associated data — just
-          contact us.
+          You can delete your account directly in the app: Profile → Delete account. Deleting the
+          account permanently removes your habits, tasks, goals, reflections, friendships, shared
+          habits, avatar and push subscription identifiers. The action is irreversible and does
+          not require contacting support.
         </p>
 
         <h2>Contact</h2>
