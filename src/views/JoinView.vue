@@ -18,7 +18,11 @@
       <div class="steps">
         <p class="steps-title">{{ t('join.stepsTitle') }}</p>
         <ol>
-          <li>{{ t('join.step1') }}</li>
+          <li>
+            <a :href="APP_STORE_URL" target="_blank" rel="noopener" class="store-link">{{
+              t('join.step1Link')
+            }}</a>{{ t('join.step1Rest') }}
+          </li>
           <li>{{ t('join.step2') }}</li>
           <li>{{ t('join.step3') }}</li>
           <li>{{ t('join.step4') }} <b>{{ code }}</b>.</li>
@@ -35,6 +39,7 @@ import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import eye from '../assets/eye.png'
 import { t } from '../i18n'
+import { APP_STORE_URL } from '../lib/links'
 
 const route = useRoute()
 const code = computed(() => String(route.params.code || ''))
@@ -150,6 +155,13 @@ h1 {
   color: var(--text-2);
   font-size: 14px;
   line-height: 1.7;
+}
+/* Ссылка на App Store внутри шага: подчёркнута, чтобы отличалась от текста
+   в списке, где всё остальное серое и некликабельное. */
+.store-link {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 3px;
 }
 .steps b {
   color: #fff;

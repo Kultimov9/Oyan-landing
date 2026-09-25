@@ -156,6 +156,7 @@ import eye from '../assets/eye.png'
 import PhoneJourney from '../components/PhoneJourney.vue'
 import { useScrollProgress } from '../composables/useScrollProgress'
 import LangSwitch from '../components/LangSwitch.vue'
+import { APP_STORE_URL, GOOGLE_PLAY_URL } from '../lib/links'
 import { t, locale, applyDocumentLocale } from '../i18n'
 
 const year = new Date().getFullYear()
@@ -167,7 +168,7 @@ const year = new Date().getFullYear()
 const STORES = [
   {
     key: 'ios',
-    url: '',
+    url: APP_STORE_URL,
     primary: true,
     keySoon: 'cta.appStore',
     keyReady: 'cta.appStoreReady',
@@ -175,7 +176,7 @@ const STORES = [
   },
   {
     key: 'android',
-    url: '',
+    url: GOOGLE_PLAY_URL,
     primary: false,
     keySoon: 'cta.googlePlay',
     keyReady: 'cta.googlePlayReady',
