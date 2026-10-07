@@ -1,782 +1,427 @@
 <template>
-  <div class="site">
-    <!-- NAV -->
+  <div class="home" :class="{ 'is-static': isStatic }">
+    <!-- Полоски сверху — как у сторис: по одной на сцену, заполняются по мере
+         прокрутки. Показывают, сколько «ролика» осталось. -->
+    <div class="bars" aria-hidden="true">
+      <i v-for="s in SCENES" :key="s.name" class="bar"><b :ref="(el) => (barEls[s.name] = el)" /></i>
+    </div>
+
     <header class="nav">
-      <div class="wrap nav-inner">
-        <a href="#top" class="brand">
-          <img :src="eye" alt="" class="brand-eye" />
-          <span class="brand-name">OYAN</span>
-        </a>
-        <nav class="nav-links">
-          <a href="#features">{{ t('nav.features') }}</a>
-          <a href="#ai">{{ t('nav.ai') }}</a>
-          <LangSwitch />
-          <a href="#get" class="nav-cta">{{ t('nav.try') }}</a>
-        </nav>
-      </div>
+      <a href="#top" class="brand" @click.prevent="goTo('hero')">
+        <span class="brand-mark"><OyanRing /></span>
+        <span class="brand-name">OYAN</span>
+      </a>
+      <nav class="nav-links">
+        <a href="#features" class="nav-link" @click.prevent="goTo('reel')">{{ t('nav.features') }}</a>
+        <a href="#ai" class="nav-link" @click.prevent="goTo('mentor')">{{ t('nav.ai') }}</a>
+        <LangSwitch />
+        <StoreButton compact />
+      </nav>
     </header>
 
-    <!-- HERO -->
-    <section id="top" class="hero" ref="heroEl">
-      <div class="hero-glow" />
-      <div class="wrap hero-inner">
-        <img :src="eye" alt="Oyan" class="hero-eye" />
-        <h1 :key="locale" class="hero-title">
-          {{ t('hero.line1') }}<br />{{ t('hero.line2') }}<br /><span class="accent">{{
-            t('hero.line3')
-          }}</span>
-        </h1>
-        <p class="hero-sub">{{ t('hero.sub') }}</p>
-        <div class="hero-actions">
-          <a href="#get" class="btn btn-primary">{{ t('hero.start') }}</a>
-          <a href="#features" class="btn btn-ghost">{{ t('hero.how') }}</a>
-        </div>
+    <!-- История. Экран (stage) закреплён на всё время, сцены на нём — слоями.
+         Длину каждой сцены в прокрутке задаёт её распорка в .track.
+         Смена языка пересобирает историю целиком: анимации привязаны к
+         элементам с текстом, а текст меняется. -->
+    <main :key="locale" ref="storyEl" class="story">
+      <div class="stage">
+        <SceneHero />
+        <SceneFeed />
+        <SceneTimer />
+        <SceneReel />
+        <SceneMentor />
+        <SceneFinale :meters="meters" />
       </div>
-      <div class="scroll-hint">
-        <span>{{ t('hero.scroll') }}</span>
-        <div class="scroll-line" />
+      <div class="track" aria-hidden="true">
+        <div
+          v-for="(s, i) in SCENES"
+          :id="s.id"
+          :key="s.name"
+          class="spacer"
+          :data-scene="s.name"
+          :style="{ height: `calc(${s.len + (i === SCENES.length - 1 ? 100 : 0)} * var(--u))` }"
+        />
       </div>
-    </section>
+    </main>
 
-    <!-- ПУТЕШЕСТВИЕ ВОКРУГ ОДНОГО ОБЪЕКТА (scroll-driven 3D) -->
-    <PhoneJourney />
-
-    <!-- FEATURES -->
-    <section id="features" class="section" ref="featuresSectionEl">
-      <div class="wrap">
-        <p class="eyebrow">{{ t('features.eyebrow') }}</p>
-        <h2 class="section-title">
-          {{ t('features.title1') }}<br />{{ t('features.title2') }}
-        </h2>
-        <!-- Карточки двигаются как одна группа от позиции скролла: внутренние
-             элементы отдельно не анимируются, иначе на экране слишком много
-             независимого движения. -->
-        <div class="grid" ref="featuresEl">
-          <div v-for="f in features" :key="f.title" class="card">
-            <div class="card-icon">{{ f.icon }}</div>
-            <h3 class="card-title">{{ f.title }}</h3>
-            <p class="card-text">{{ f.text }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- AI -->
-    <section id="ai" class="section ai-section" ref="aiEl">
-      <div class="wrap ai-inner">
-        <div class="ai-copy">
-          <p class="eyebrow">{{ t('ai.eyebrow') }}</p>
-          <h2 class="section-title">{{ t('ai.title1') }}<br />{{ t('ai.title2') }}</h2>
-          <p class="ai-lead">{{ t('ai.lead') }}</p>
-          <ul class="ai-list">
-            <!-- Пункты проявляются по очереди по мере прокрутки: --i задаёт
-                 сдвиг очереди, сама очередь считается в CSS от --p. -->
-            <li v-for="(a, i) in aiPoints" :key="a" :style="{ '--i': i }">
-              <span class="tick">→</span>{{ a }}
-            </li>
-          </ul>
-        </div>
-        <div class="ai-card-wrap">
-          <div class="ai-card">
-            <div class="ai-card-head">
-              <img :src="eye" alt="" class="ai-card-eye" />
-              <span>OYAN</span>
-            </div>
-            <p class="ai-card-msg">{{ t('ai.msg') }}</p>
-            <div class="ai-card-actions">
-              <span class="ai-btn ai-btn-primary">{{ t('ai.btnPrimary') }}</span>
-              <span class="ai-btn ai-btn-ghost">{{ t('ai.btnGhost') }}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- STATS / PROGRESS -->
-    <section class="section" ref="statsEl">
-      <div class="wrap">
-        <p class="eyebrow">{{ t('stats.eyebrow') }}</p>
-        <h2 class="section-title">{{ t('stats.title1') }}<br />{{ t('stats.title2') }}</h2>
-        <div class="stats">
-          <!-- Цифры набегают вместе с прокруткой: крутишь назад — уменьшаются. -->
-          <div class="stat" :style="{ '--i': 0 }">
-            <span class="stat-num">{{ countTo(7) }}</span>
-            <span class="stat-label">{{ t('stats.label1') }}</span>
-          </div>
-          <div class="stat" :style="{ '--i': 1 }">
-            <span class="stat-num">{{ countTo(5) }}{{ t('stats.minSuffix') }}</span>
-            <span class="stat-label">{{ t('stats.label2') }}</span>
-          </div>
-          <div class="stat" :style="{ '--i': 2 }">
-            <span class="stat-num">∞</span>
-            <span class="stat-label">{{ t('stats.label3') }}</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA -->
-    <section id="get" class="cta" ref="ctaEl">
-      <div class="cta-glow" />
-      <div class="wrap cta-inner">
-        <img :src="eye" alt="" class="cta-eye" />
-        <h2 class="cta-title">{{ t('cta.title') }}</h2>
-        <p class="cta-sub">{{ t('cta.sub') }}</p>
-        <div class="hero-actions">
-          <!-- Появилась ссылка — кнопка сама становится ссылкой (см. STORES) -->
-          <component
-            v-for="store in stores"
-            :key="store.key"
-            :is="store.url ? 'a' : 'span'"
-            :href="store.url || undefined"
-            :target="store.url ? '_blank' : undefined"
-            rel="noopener"
-            class="btn"
-            :class="store.primary ? 'btn-primary' : 'btn-ghost'"
-          >
-            {{ store.url ? t(store.keyReady) : t(store.keySoon) }}
-          </component>
-        </div>
-      </div>
-    </section>
+    <!-- Счётчик пролистанного: мелкая деталь, которая возвращается в финале. -->
+    <p class="odo" :class="{ on: scrolled && !inFinale }" aria-hidden="true">
+      {{ t('finale.odoLabel') }} ≈ <b>{{ meters }}</b> {{ t('finale.meter') }}
+    </p>
 
     <footer class="footer">
-      <div class="wrap footer-inner">
-        <span class="brand-name">OYAN</span>
-        <router-link to="/privacy" class="footer-link">{{ t('footer.privacy') }}</router-link>
-        <span class="footer-note">© {{ year }} Oyan — {{ t('footer.note') }}</span>
-      </div>
+      <span class="brand-name">OYAN</span>
+      <router-link to="/privacy" class="footer-link">{{ t('footer.privacy') }}</router-link>
+      <span class="footer-note">© {{ year }} Oyan — {{ t('footer.note') }}</span>
     </footer>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import eye from '../assets/eye.png'
-import PhoneJourney from '../components/PhoneJourney.vue'
-import { useScrollProgress } from '../composables/useScrollProgress'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import OyanRing from '../components/home/OyanRing.vue'
+import StoreButton from '../components/home/StoreButton.vue'
+import SceneHero from '../components/home/SceneHero.vue'
+import SceneFeed from '../components/home/SceneFeed.vue'
+import SceneTimer from '../components/home/SceneTimer.vue'
+import SceneReel from '../components/home/SceneReel.vue'
+import SceneMentor from '../components/home/SceneMentor.vue'
+import SceneFinale from '../components/home/SceneFinale.vue'
 import LangSwitch from '../components/LangSwitch.vue'
-import { APP_STORE_URL, GOOGLE_PLAY_URL } from '../lib/links'
+import { ScrollTrigger, motionOff, startStory, stopStory } from '../composables/useStory'
 import { t, locale, applyDocumentLocale } from '../i18n'
 
 const year = new Date().getFullYear()
+const isStatic = motionOff()
 
-// Ссылки на магазины в одном месте: как появится адрес в App Store Connect —
-// вписать сюда, и кнопка сама превратится в ссылку с другим текстом.
-// Google Play скрыт: Android-сборка пока без пуш-уведомлений и в стор не идёт.
-// Чтобы вернуть — снять show: false.
-const STORES = [
-  {
-    key: 'ios',
-    url: APP_STORE_URL,
-    primary: true,
-    keySoon: 'cta.appStore',
-    keyReady: 'cta.appStoreReady',
-    show: true,
-  },
-  {
-    key: 'android',
-    url: GOOGLE_PLAY_URL,
-    primary: false,
-    keySoon: 'cta.googlePlay',
-    keyReady: 'cta.googlePlayReady',
-    show: false,
-  },
+// Сцены по порядку.
+//  len   — сколько прокрутки длится сцена, в процентах высоты экрана;
+//  id    — якорь её распорки;
+//  layer — слой сцены (нужен, когда анимации выключены и распорок нет);
+//  enter — доля сцены, на которую приводит ссылка из шапки: в самом начале
+//          сцены кадр ещё пустой, содержимое только появляется.
+const SCENES = [
+  { name: 'hero', id: 'top', layer: '.hero', len: 130, enter: 0 },
+  { name: 'feed', id: 'antiscroll', layer: '.feed-scene', len: 340, enter: 0.07 },
+  { name: 'timer', id: 'timer', layer: '.timer-scene', len: 300, enter: 0.12 },
+  { name: 'reel', id: 'features', layer: '.reel-scene', len: 380, enter: 0.1 },
+  { name: 'mentor', id: 'ai', layer: '.mentor-scene', len: 280, enter: 0.12 },
+  { name: 'finale', id: 'get', layer: '.finale', len: 140, enter: 1 },
 ]
-const stores = STORES.filter((s) => s.show)
 
-// Иконки не переводятся — берём их отдельно и склеиваем с текстом локали.
-const FEATURE_ICONS = ['◆', '✓', '◎', '☾', '▦', '❋', '◈', '⊛', '↺']
+const storyEl = ref(null)
+const barEls = {}
+const meters = ref('0,0')
+const scrolled = ref(false)
+// В финале то же число стоит в тексте сцены — угловой счётчик там лишний.
+const inFinale = ref(false)
 
-const features = computed(() =>
-  t('features.items').map((f, i) => ({ icon: FEATURE_ICONS[i], title: f.title, text: f.text })),
-)
+// Один CSS-пиксель на телефоне физически мельче, чем на мониторе. Числа
+// примерные — поэтому везде стоит «≈».
+const MM_PER_PX = window.matchMedia('(pointer: coarse)').matches ? 0.16 : 0.26
 
-const aiPoints = computed(() => t('ai.points'))
+let ticking = false
+let lastY = window.scrollY
+let travelled = 0
 
-// --- Параллакс hero ---
-// Все секции подключены к одному движку прогресса: он раздаёт долю пройденного
-// пути в CSS-переменную --p, а секции двигают содержимое чистым CSS.
-// Отдельных слушателей скролла больше нет — раньше их было три.
-const heroEl = ref(null)
-useScrollProgress(heroEl)
+function update() {
+  ticking = false
+  const y = window.scrollY
+  const vh = window.innerHeight
 
-// Прогресс считаем по самой сетке, а не по секции: секция начинается с
-// заголовка, и по ней карточки успевали собраться ещё до появления на экране.
-const featuresSectionEl = ref(null)
-useScrollProgress(featuresSectionEl)
+  // Одометр считает весь путь пальца, в обе стороны, а не позицию на странице.
+  travelled += Math.abs(y - lastY)
+  lastY = y
+  const m = ((travelled * MM_PER_PX) / 1000).toFixed(1).replace('.', ',')
+  if (m !== meters.value) meters.value = m
+  if (!scrolled.value && y > 40) scrolled.value = true
 
-const featuresEl = ref(null)
-useScrollProgress(featuresEl)
+  SCENES.forEach((s, i) => {
+    const bar = barEls[s.name]
+    const spacer = document.getElementById(s.id)
+    if (!bar || !spacer) return
+    const r = spacer.getBoundingClientRect()
+    // У последней распорки лишний экран: история открепляется раньше её конца.
+    const span = r.height - (i === SCENES.length - 1 ? vh : 0)
+    const p = span > 0 ? Math.min(1, Math.max(0, -r.top / span)) : 0
+    bar.style.transform = `scaleX(${p.toFixed(4)})`
+    if (i === SCENES.length - 1 && inFinale.value !== p > 0) inFinale.value = p > 0
+  })
+}
 
-const aiEl = ref(null)
-useScrollProgress(aiEl)
+// Переход к сцене по ссылке. Плавная прокрутка проматывает всё, что по пути, —
+// как ускоренная перемотка ролика.
+function goTo(name) {
+  const i = SCENES.findIndex((s) => s.name === name)
+  const scene = SCENES[i]
+  if (!scene) return
+  let top = 0
+  if (isStatic) {
+    const el = document.querySelector(scene.layer)
+    top = el ? window.scrollY + el.getBoundingClientRect().top : 0
+  } else {
+    const r = document.getElementById(scene.id).getBoundingClientRect()
+    const span = r.height - (i === SCENES.length - 1 ? window.innerHeight : 0)
+    top = window.scrollY + r.top + span * scene.enter
+  }
+  window.scrollTo({ top, behavior: isStatic ? 'auto' : 'smooth' })
+}
 
-const ctaEl = ref(null)
-useScrollProgress(ctaEl)
-
-// Цифрам нужен прогресс числом: текст в CSS не посчитать.
-const statsEl = ref(null)
-const statsP = ref(0)
-useScrollProgress(statsEl, statsP)
-
-// Счётчик набегает на первой половине прохода секции и держится дальше.
-function countTo(target) {
-  const t = Math.min(1, Math.max(0, (statsP.value - 0.1) / 0.4))
-  return Math.round(target * t)
+function onScroll() {
+  if (ticking) return
+  ticking = true
+  requestAnimationFrame(update)
 }
 
 onMounted(() => {
-  // lang, <title> и description под выбранный язык — важно для SEO и скринридеров.
+  // lang, <title> и description под выбранный язык — для SEO и скринридеров.
   applyDocumentLocale()
+  window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll, { passive: true })
+  // Сцены (дочерние компоненты) к этому моменту уже на странице и сообщили о
+  // себе — собираем из них общую шкалу.
+  startStory(storyEl.value, SCENES)
+  update()
+  // Ссылка извне сразу на сцену (oyan…/#features): открываем её в том кадре,
+  // где уже есть на что смотреть.
+  const linked = SCENES.find((s) => s.id === window.location.hash.slice(1))
+  if (linked && linked.name !== 'hero') requestAnimationFrame(() => goTo(linked.name))
+})
+
+onUnmounted(() => {
+  stopStory()
+  window.removeEventListener('scroll', onScroll)
+  window.removeEventListener('resize', onScroll)
+})
+
+// Смена языка пересоздаёт сцены (см. :key в разметке) — собираем шкалу заново
+// из новых элементов и ставим её на текущую позицию прокрутки.
+watch(locale, async () => {
+  await nextTick()
+  startStory(storyEl.value, SCENES)
+  ScrollTrigger.refresh()
+  update()
 })
 </script>
 
 <style scoped>
-.site {
+.home {
+  /* Палитра снята с иконки приложения: фиолетово-чёрный фон, дуга от
+     фиолетового к пурпурному. Кремовый — цвет интерфейса самого Oyan. */
+  --ink: #0b0612;
+  --cream: #f5f0e8;
+  --cream-2: #a9a2b2;
+  --cream-3: #6f6779;
+  --violet: #7c5cff;
+  --violet-2: #a98bff;
+  --magenta: #ce5cff;
+  --line: rgba(245, 240, 232, 0.12);
+  --font-display: 'Unbounded', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  /* Единица длины сцен: высота экрана. svh, а не vh: на iPhone vh прыгает,
+     когда прячется адресная строка. */
+  --u: 1vh;
   position: relative;
+  background: var(--ink);
+  color: var(--cream);
+  font-family: var(--font-body);
+}
+@supports (height: 1svh) {
+  .home {
+    --u: 1svh;
+  }
 }
 
-/* NAV */
+/* ── История ── */
+.story {
+  position: relative;
+}
+.stage {
+  position: sticky;
+  top: 0;
+  height: calc(100 * var(--u));
+  overflow: hidden;
+}
+.track {
+  position: relative;
+  /* Распорки начинаются от верха истории, под закреплённым экраном. */
+  margin-top: calc(-100 * var(--u));
+  pointer-events: none;
+}
+.stage :deep(.layer) {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-color: var(--ink);
+}
+/* До сборки шкалы слои скрыты, чтобы не мелькнуть стопкой друг на друге. */
+.home:not(.is-static) .stage :deep(.layer) {
+  visibility: hidden;
+}
+/* Заливка «окна» между сценами — см. useStory. */
+.stage :deep(.portal-veil) {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  opacity: 0;
+  pointer-events: none;
+}
+.stage :deep(.eyebrow) {
+  color: var(--violet-2);
+  letter-spacing: 0.2em;
+}
+
+/* ── Полоски сцен ── */
+.bars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 60;
+  display: flex;
+  gap: 4px;
+  padding: calc(env(safe-area-inset-top) + 8px) 12px 0;
+  pointer-events: none;
+}
+.bar {
+  flex: 1;
+  height: 2px;
+  border-radius: 2px;
+  background: rgba(245, 240, 232, 0.2);
+  overflow: hidden;
+}
+.bar b {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--cream);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* ── Шапка ── */
 .nav {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 50;
-  backdrop-filter: blur(14px);
-  background: rgba(10, 10, 10, 0.55);
-  border-bottom: 1px solid var(--border);
-}
-.nav-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 64px;
+  gap: 12px;
+  padding: calc(env(safe-area-inset-top) + 20px) 16px 18px;
+  /* Затемнение вместо плашки: шапка не отрезает сцену, а растворяется в ней. */
+  background: linear-gradient(rgba(11, 6, 18, 0.82), rgba(11, 6, 18, 0));
+  pointer-events: none;
+}
+.nav > * {
+  pointer-events: auto;
 }
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 9px;
 }
-.brand-eye {
-  width: 34px;
-  height: auto;
+.brand-mark {
+  width: 28px;
+  height: 28px;
 }
 .brand-name {
-  font-family: 'Sora', sans-serif;
+  font-family: var(--font-display);
   font-weight: 600;
-  letter-spacing: 0.14em;
-  font-size: 15px;
-}
-.brand-ai {
-  color: var(--text-2);
+  font-size: 14px;
+  letter-spacing: 0.16em;
 }
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 28px;
-  font-size: 14px;
-  color: var(--text-2);
+  gap: 10px;
 }
-.nav-links a {
+.nav-link {
+  display: none;
+  font-size: 14px;
+  color: var(--cream-2);
   transition: color 0.2s;
 }
-.nav-links a:hover {
-  color: var(--text);
-}
-.nav-cta {
-  color: var(--bg) !important;
-  background: var(--accent);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-weight: 600;
+.nav-link:hover {
+  color: var(--cream);
 }
 
-/* HERO */
-.hero {
-  position: relative;
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  overflow: hidden;
-}
-.hero-glow {
-  position: absolute;
-  top: -10%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 900px;
-  height: 900px;
-  max-width: 120vw;
-  background: radial-gradient(circle, rgba(245, 240, 232, 0.12) 0%, transparent 60%);
-  filter: blur(20px);
-  pointer-events: none;
-}
-.hero-inner {
-  position: relative;
-  text-align: center;
-  padding-top: 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.hero-eye {
-  width: 150px;
-  height: auto;
-  margin-bottom: 26px;
-  filter: drop-shadow(0 0 40px rgba(245, 240, 232, 0.25));
-  animation: floaty 6s ease-in-out infinite;
-}
-@keyframes floaty {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-12px);
-  }
-}
-.hero-title {
-  font-size: clamp(44px, 9vw, 92px);
-  margin: 18px 0 22px;
-}
-.hero-title .accent {
-  color: var(--accent);
-}
-.hero-sub {
-  max-width: 560px;
-  color: var(--text-2);
-  font-size: clamp(16px, 2.4vw, 19px);
-}
-.hero-actions {
-  display: flex;
-  gap: 14px;
-  margin-top: 34px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.btn {
-  padding: 15px 26px;
-  border-radius: 14px;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition:
-    transform 0.15s ease,
-    background 0.2s;
-  display: inline-block;
-}
-.btn:active {
-  transform: scale(0.97);
-}
-.btn-primary {
-  background: var(--accent);
-  color: var(--bg);
-}
-.btn-ghost {
-  border: 1px solid var(--border);
-  color: var(--text-2);
-}
-.btn-ghost:hover {
-  color: var(--text);
-  border-color: #3a3a3a;
-}
-.scroll-hint {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
+/* ── Счётчик пролистанного ── */
+.odo {
+  position: fixed;
+  left: 16px;
+  bottom: calc(env(safe-area-inset-bottom) + 12px);
+  z-index: 40;
   font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.scroll-line {
-  width: 1px;
-  height: 42px;
-  background: linear-gradient(var(--muted), transparent);
-  animation: pulse 2s ease-in-out infinite;
-}
-@keyframes pulse {
-  0%,
-  100% {
-    opacity: 0.3;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-/* SECTIONS */
-.section {
-  padding: 130px 0;
-  border-top: 1px solid var(--border);
-}
-.section-title {
-  font-size: clamp(30px, 5vw, 52px);
-  margin: 16px 0 54px;
-}
-
-/* FEATURES GRID */
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-  /* Перспектива на контейнере: без неё rotateX даёт плоский сдвиг, а не глубину */
-  perspective: 1400px;
-  perspective-origin: 50% 40%;
-}
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 30px;
-  /* Сборка: 0 — карточка ещё в стороне, 1 — на месте. Сетка входит в экран на
-     p≈0 и оказывается по центру на p≈0.5, поэтому сборка укладывается в
-     0.05–0.45 — она целиком происходит на глазах, а не за кадром. */
-  --enter: clamp(0, calc((var(--p, 1) - 0.02) / 0.45), 1);
-  /* Сквозной снос: после сборки движение не замирает, поэтому скролл
-     туда-обратно всегда что-то двигает. */
-  --drift: calc((var(--p, 1) - 0.5) * -60px);
-  --x: calc(var(--dx, 0px) * (1 - var(--enter)));
-  --y: calc(var(--dy, 40px) * (1 - var(--enter)) + var(--drift));
-  --scale: calc(0.82 + 0.18 * var(--enter));
-  /* Карточка выходит из глубины: отъезд по Z и наклон выпрямляются к сборке. */
-  --z: calc((1 - var(--enter)) * -320px);
-  --rot: calc((1 - var(--enter)) * 14deg);
-  transform: translate3d(var(--x), calc(var(--y) + var(--lift, 0px)), var(--z))
-    rotateX(var(--rot)) scale(var(--scale));
-  transform-style: preserve-3d;
-  opacity: var(--enter);
-  /* transform без transition: движение привязано к скроллу, сглаживание дало бы
-     отставание от пальца. Анимируем только transform и opacity. */
-  transition:
-    border-color 0.3s ease,
-    background 0.3s ease;
-  will-change: transform, opacity;
-}
-/* Крайние колонки приезжают с боков, средняя — снизу. */
-.card:nth-child(3n + 1) {
-  --dx: -190px;
-  --dy: 60px;
-}
-.card:nth-child(3n + 2) {
-  --dx: 0px;
-  --dy: 150px;
-}
-.card:nth-child(3n + 3) {
-  --dx: 190px;
-  --dy: 60px;
-}
-.card:hover {
-  --lift: -4px;
-  border-color: #333;
-  background: var(--surface-2);
-}
-.card-icon {
-  width: 46px;
-  height: 46px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 12px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  color: var(--accent);
-  font-size: 20px;
-  margin-bottom: 20px;
-}
-.card-title {
-  font-size: 20px;
-  margin-bottom: 10px;
-}
-.card-text {
-  color: var(--text-2);
-  font-size: 15px;
-}
-
-/* AI */
-.ai-inner {
-  display: grid;
-  grid-template-columns: 1.1fr 0.9fr;
-  gap: 60px;
-  align-items: center;
-}
-.ai-lead {
-  color: var(--text-2);
-  font-size: 18px;
-  margin-bottom: 30px;
-  max-width: 480px;
-}
-.ai-list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.ai-list li {
-  display: flex;
-  gap: 12px;
-  color: var(--text);
-  font-size: 16px;
-}
-.tick {
-  color: var(--accent);
-  font-weight: 700;
-}
-.ai-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-}
-.ai-card-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
-.ai-card-eye {
-  width: 26px;
-  height: auto;
-}
-.ai-card-head span {
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.18em;
-  color: var(--text-2);
-}
-.ai-card-msg {
-  color: #e2e2dc;
-  font-size: 16px;
-  line-height: 1.6;
-  margin-bottom: 18px;
-}
-.ai-card-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.ai-btn {
-  border-radius: 12px;
-  padding: 13px;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-}
-.ai-btn-primary {
-  background: var(--accent);
-  color: var(--bg);
-}
-.ai-btn-ghost {
-  border: 1px solid var(--border);
-  color: var(--text-2);
-  font-weight: 500;
-}
-
-/* STATS */
-.stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 18px;
-}
-.stat {
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 38px 30px;
-  background: var(--surface);
-}
-.stat-num {
-  display: block;
-  font-family: 'Sora', sans-serif;
-  font-size: 56px;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1;
-  margin-bottom: 14px;
-}
-.stat-label {
-  color: var(--text-2);
-  font-size: 15px;
-}
-
-/* CTA */
-.cta {
-  position: relative;
-  text-align: center;
-  padding: 150px 0;
-  overflow: hidden;
-  border-top: 1px solid var(--border);
-}
-.cta-glow {
-  position: absolute;
-  bottom: -30%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 800px;
-  height: 800px;
-  max-width: 130vw;
-  background: radial-gradient(circle, rgba(245, 240, 232, 0.1) 0%, transparent 60%);
+  letter-spacing: 0.06em;
+  color: var(--cream-3);
+  opacity: 0;
+  transition: opacity 0.6s ease;
   pointer-events: none;
 }
-.cta-inner {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+.odo.on {
+  opacity: 1;
 }
-.cta-eye {
-  width: 90px;
-  height: auto;
-  margin-bottom: 24px;
-  filter: drop-shadow(0 0 30px rgba(245, 240, 232, 0.3));
-}
-.cta-title {
-  font-size: clamp(38px, 7vw, 76px);
-  margin-bottom: 16px;
-}
-.cta-sub {
-  color: var(--text-2);
-  font-size: 18px;
-  margin-bottom: 34px;
+.odo b {
+  color: var(--cream-2);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
-/* FOOTER */
+/* ── Подвал ── */
 .footer {
-  border-top: 1px solid var(--border);
-  padding: 30px 0;
-}
-.footer-inner {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px 24px;
   flex-wrap: wrap;
-}
-.footer-note {
-  color: var(--muted);
-  font-size: 13px;
+  padding: 28px 24px calc(env(safe-area-inset-bottom) + 44px);
+  border-top: 1px solid var(--line);
+  background: var(--ink);
 }
 .footer-link {
-  color: var(--text-2);
+  color: var(--cream-2);
   font-size: 13px;
   text-decoration: underline;
   text-underline-offset: 3px;
-  transition: color 0.2s;
 }
 .footer-link:hover {
-  color: var(--text);
+  color: var(--cream);
+}
+.footer-note {
+  color: var(--cream-3);
+  font-size: 13px;
 }
 
-/* RESPONSIVE */
-@media (max-width: 860px) {
-  .nav-links a:not(.nav-cta) {
+/* На самых узких телефонах слово OYAN не помещается рядом с кнопкой — остаётся знак. */
+@media (max-width: 359px) {
+  .nav .brand-name {
     display: none;
   }
-  .grid,
-  .stats {
-    grid-template-columns: 1fr;
+}
+
+@media (min-width: 900px) {
+  .nav {
+    padding-left: 32px;
+    padding-right: 32px;
   }
-  /* В одну колонку боковой разлёт не нужен — карточки приезжают только снизу. */
-  .card:nth-child(3n + 1),
-  .card:nth-child(3n + 2),
-  .card:nth-child(3n + 3) {
-    --dx: 0px;
-    --dy: 60px;
+  .nav-links {
+    gap: 22px;
   }
-  .ai-inner {
-    grid-template-columns: 1fr;
-    gap: 36px;
+  .nav-link {
+    display: block;
   }
-  .section {
-    padding: 90px 0;
+  .footer {
+    padding-left: 48px;
+    padding-right: 48px;
+  }
+  .odo {
+    left: 32px;
   }
 }
 
-/* ── Привязка к прокрутке ─────────────────────────────────────────────────
-   Каждая секция получает --p (0 — только показалась снизу, 1 — ушла вверх)
-   от общего движка. Всё движение ниже — чистая функция от неё, поэтому оно
-   обратимо: крутишь назад — элементы едут назад.
-   Двигаем только transform и opacity — это не вызывает пересчёт раскладки. */
-
-/* Первый экран уходит вверх, а не входит снизу: на самом верху страницы его
-   середина совпадает с серединой экрана, то есть --p уже равен 0.5. Поэтому
-   отсчёт ведём от 0.5 — иначе hero был бы скрыт сразу при загрузке. */
-.hero-inner {
-  --out: clamp(0, calc((var(--p, 0.5) - 0.5) / 0.35), 1);
-  transform: translate3d(0, calc(var(--out) * 120px), 0) scale(calc(1 - var(--out) * 0.06));
-  opacity: calc(1 - var(--out));
-  will-change: transform, opacity;
+/* ── Без анимаций ──
+   Сцены идут обычной страницей, одна под другой, в своих финальных кадрах. */
+.is-static .stage {
+  position: static;
+  height: auto;
+  overflow: visible;
 }
-.hero-glow {
-  transform: translate(-50%, calc(max(0, var(--p, 0.5) - 0.5) * 420px));
-  will-change: transform;
+.is-static .track,
+.is-static .bars,
+.is-static .odo {
+  display: none;
 }
-.scroll-hint {
-  opacity: calc(1 - clamp(0, calc((var(--p, 0.5) - 0.5) / 0.12), 1));
+.is-static .stage :deep(.layer) {
+  position: relative;
+  inset: auto;
 }
-
-/* AI: текст приезжает слева, карточка справа, пункты списка — по очереди. */
-.ai-copy {
-  --in: clamp(0, calc((var(--p, 1) - 0.05) / 0.4), 1);
-  transform: translate3d(calc((1 - var(--in)) * -80px), 0, 0);
-  opacity: var(--in);
-  will-change: transform, opacity;
-}
-.ai-card-wrap {
-  --in: clamp(0, calc((var(--p, 1) - 0.1) / 0.4), 1);
-  perspective: 1200px;
-  opacity: var(--in);
-  will-change: transform, opacity;
-}
-.ai-card {
-  /* Карточка развёрнута к зрителю и выпрямляется по мере прокрутки. */
-  transform: translate3d(calc((1 - var(--in, 1)) * 90px), 0, calc((1 - var(--in, 1)) * -240px))
-    rotateY(calc((1 - var(--in, 1)) * -16deg));
-}
-.ai-list li {
-  /* Каждый следующий пункт стартует на 0.06 позже — очередь по прокрутке. */
-  --in: clamp(0, calc((var(--p, 1) - 0.18 - var(--i, 0) * 0.06) / 0.16), 1);
-  transform: translate3d(calc((1 - var(--in)) * -28px), 0, 0);
-  opacity: var(--in);
-}
-
-/* Цифры: карточки поднимаются по очереди, значения набегают в шаблоне. */
-.stats {
-  perspective: 1200px;
-}
-.stat {
-  --in: clamp(0, calc((var(--p, 1) - 0.08 - var(--i, 0) * 0.06) / 0.3), 1);
-  transform: translate3d(0, calc((1 - var(--in)) * 60px), calc((1 - var(--in)) * -260px))
-    rotateX(calc((1 - var(--in)) * 12deg))
-    scale(calc(0.88 + 0.12 * var(--in)));
-  opacity: var(--in);
-  will-change: transform, opacity;
-}
-
-/* Финал: свечение растёт по мере приближения, содержимое поднимается. */
-.cta-inner {
-  --in: clamp(0, calc((var(--p, 1) - 0.05) / 0.45), 1);
-  transform: translate3d(0, calc((1 - var(--in)) * 70px), 0);
-  opacity: var(--in);
-  will-change: transform, opacity;
-}
-.cta-glow {
-  transform: translate(-50%, 0) scale(calc(0.6 + var(--p, 0) * 0.8));
-  opacity: calc(0.3 + var(--p, 0) * 0.7);
-}
-
-/* Заголовки секций: лёгкий подъём, чтобы шапка не стояла мёртво. */
-.section .eyebrow,
-.section .section-title {
-  --in: clamp(0, calc((var(--p, 1) - 0.02) / 0.3), 1);
-  transform: translate3d(0, calc((1 - var(--in)) * 34px), 0);
-  opacity: var(--in);
+/* Первый и последний экран — в полный рост, остальные по содержимому. */
+.is-static .stage :deep(.hero),
+.is-static .stage :deep(.finale) {
+  min-height: calc(100 * var(--u));
 }
 </style>
